@@ -1,0 +1,7 @@
+streamlit
+feedparser
+io
+urllib
+feedparser
+bs4
+pandas
