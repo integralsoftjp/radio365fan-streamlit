@@ -1,16 +1,19 @@
-import streamlit as st
-from PIL import Image
-import io
-from urllib.request import urlopen
-import feedparser
-from bs4 import BeautifulSoup
-import pandas as pd
 import datetime
+import io
+from PIL import Image
+
+import streamlit as st
+import feedparser
+import pandas as pd
+from urllib.request import urlopen
+from bs4 import BeautifulSoup
+
 
 st.title("RADIO365 DJ's Fan site")
+
 hedder_text = """
-こちらのサイトは Radio365 DJを応援するサイトです。
-画像下に表示されている再生ボタンで番組を聴くことができます。（音声にご注意）
+こちらのサイトは Radio365 DJを応援するファンサイトです。
+画像下に表示されている再生ボタンで番組を聴くことができます。（初期音声にご注意）
 番組切り替えは左側「 Select program 」を利用してください。
 """
 st.text(hedder_text)
@@ -25,7 +28,6 @@ program_base = 'https://www.radio365.net/programs/archive'
 program_res = feedparser.parse('https://www.radio365.net/programs/rss.xml')
 
 # dj list
-
 dj_ids = []
 dj_names = []
 dj_haveprograms = []
@@ -38,6 +40,7 @@ dj_images_urls = []
 dj_dicts = dict()
 dj_otherDicts = dict()
 
+# program list
 program_ids = []
 program_titles = []
 program_subtitles = []
@@ -48,16 +51,35 @@ program_images = []
 program_summarys = []
 program_sound_urls = []
 
+dj_img_datas = []
+
+@st.cache(suppress_st_warning=True)
+def read_image():
+    image_url = add_listnew[selector][0]
+    img_data = io.BytesIO(urlopen(image_url).read())
+    return img_data
+
+@st.cache(suppress_st_warning=True)
+def read_sound_data():
+    sound_url = add_listnew[selector][1]
+    sound_data = io.BytesIO(urlopen(sound_url).read())
+    return sound_data
+
+def read_sidebar_photos():
+    global dj_img_datas
+    for i, dj_image_url in enumerate(dj_images_urls):
+        dj_img_datas.append(io.BytesIO(urlopen(dj_image_url).read()))
+    return dj_img_datas
+
 dj_contents = dj_soup.select("div .prof dl")
-    
 for i, element in enumerate(dj_contents):
     dj_ids.append(element.select('dt')[0].get('id'))
-    dj_images_urls.append(element.select('dt')[0].select('img')[0]['src'])    
-    
+    dj_images_urls.append(element.select('dt')[0].select('img')[0]['src'])
+
     el2 = dj_contents[i].get_text().split('\n')[1:-1]
     key = el2[0].split('：')[1]
     # --
-    dj_otherDicts = dict() #初期化
+    dj_otherDicts = dict() #init
 
     for j in el2[1:]:
         key2 = j.split('：')[0]
@@ -89,7 +111,7 @@ for element in dj_contents:
         dj_bloods.append(contents['血液型'])
     else:
         dj_bloods.append(None)
-        
+
     # -- 身長
     if '身長' in contents:
         dj_heights.append(contents['身長'])
@@ -110,25 +132,27 @@ for element in dj_contents:
 
 df = pd.DataFrame({
     'id': dj_ids,
-    '名前': dj_names,
-    '担当番組': dj_haveprograms,
-    '誕生日': dj_births,
-    '血液型': dj_bloods,
-    '身長': dj_heights,
-    '趣味': dj_hobbys,
-    '特技': dj_skills,
+    '名前Name': dj_names,
+    '担当番組Program': dj_haveprograms,
+    '誕生日Birth': dj_births,
+    '血液型Blood': dj_bloods,
+    '身長Hight': dj_heights,
+    '趣味Hobbys': dj_hobbys,
+    '特技Skills': dj_skills,
     '画像URL': dj_images_urls
 })
+df = df.style.set_properties(**{'text-align': 'left'})
 
 #================================================================
 #================================================================
 #================================================================
-for entrie in program_res.entries:
+
+for cnt, entrie in enumerate(program_res.entries):
     program_id = entrie['mobileimg']['src'].split('/')[5]
     mark = "/" + program_id + "/"
     href = entrie['links'][1]['href']
     program_ids.append(program_id)
-    program_titles.append(entrie['title'])
+    program_titles.append(str(cnt+1) + ": " + entrie['title'])
     program_subtitles.append(entrie['mobilesubtitle'])
     program_images.append(entrie['mobileimg']['src'])
     program_summarys.append(entrie['summary'])
@@ -137,49 +161,46 @@ for entrie in program_res.entries:
     program_pubdates.append(datetime.datetime.strptime(datestr, '%a, %d %b %Y %H:%M:%S %z').strftime('%Y/%m/%d'))
     program_djnames.append('　')
     program_times.append('　')
-    
-    
+
 df2 = pd.DataFrame({
 'id': program_ids,
 'Program': program_titles,
 '番組名': program_subtitles,
-'DJ': program_djnames,
-'配信日': program_pubdates,
-'再生時間': program_times
+'DJName': program_djnames,
+'配信日Pubday': program_pubdates,
+'再生時間SoundTime': program_times
 })
+df2 = df2.style.set_properties(**{'text-align': 'left'})
 
 ziplist = list(zip(program_images , program_sound_urls, program_summarys))
 add_listnew = dict(zip(program_titles, ziplist))
 
-selector = st.sidebar.selectbox("Select program:",program_titles)
+selector = st.sidebar.selectbox("Select program (1 - 100):",program_titles)
 
-image_url = add_listnew[selector][0]
-img_data = io.BytesIO(urlopen(image_url).read())
+#===== read sidebar image file =======
+img_data = read_image()
 st.image(img_data, caption=selector, use_column_width=True)
 
 # sound update
-sound_url = add_listnew[selector][1]
-data = io.BytesIO(urlopen(sound_url).read())
-st.audio(data, format='audio/aac')
+sound_data = read_sound_data()
+st.audio(sound_data, format='audio/aac')
 
 st.markdown(add_listnew[selector][2], unsafe_allow_html=True)
 
-st.write('')
+# st.write('')
 
-# agree = st.checkbox('DJ List', value=True, help='DJリストを表示します。')
-# if agree:
-#     st.dataframe(df)
+if dj_img_datas == []:
+    with st.beta_expander("DJ List",expanded=False):
+        st.dataframe(df)
 
-# agree2 = st.checkbox('Program', value=True, help='番組リストを表示します。')
-# if agree2:
-#     st.dataframe(df2)
-with st.beta_expander('DJ List',expanded=False):
-    st.dataframe(df)
-    
-with st.beta_expander('Program',expanded=False):
-    st.dataframe(df2)
+if dj_img_datas == []:
+    with st.beta_expander('Program List',expanded=False):
+        st.dataframe(df2)
+
 
 st.sidebar.text("Dj's Photo:")
-for i, dj_image_url in enumerate(dj_images_urls):
-    dj_img_data = io.BytesIO(urlopen(dj_image_url).read())
-    st.sidebar.image(dj_img_data, caption=dj_names[i], use_column_width='True')
+
+if dj_img_datas == []:
+    dj_img_datas = read_sidebar_photos()
+    for i, dj_image_url in enumerate(dj_images_urls):
+        st.sidebar.image(dj_img_datas[i], caption=dj_names[i], use_column_width='True')
