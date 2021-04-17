@@ -1,3 +1,9 @@
+    """[summary]
+
+    Returns:
+        [type]: [description]
+    """
+
 import datetime
 import io
 from PIL import Image
