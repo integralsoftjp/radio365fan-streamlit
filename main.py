@@ -3,20 +3,14 @@ import io
 from PIL import Image
 
 import streamlit as st
+import streamlit.components.v1 as componentsv1
 import feedparser
 import pandas as pd
 from urllib.request import urlopen
 from bs4 import BeautifulSoup
 
 
-st.title("RADIO365 DJ's Fan site")
-
-hedder_text = """
-こちらのサイトは Radio365 DJを応援するファンサイトです。
-画像下に表示されている再生ボタンで番組を聴くことができます。（初期音声にご注意）
-番組切り替えは左側「 Select program 」を利用してください。
-"""
-st.text(hedder_text)
+domain = "https://www.radio365.net"
 
 dj_base = 'https://www.radio365.net/navigator/'
 dj_res = urlopen(dj_base)
@@ -37,6 +31,8 @@ dj_heights = []
 dj_hobbys = []
 dj_skills = []
 dj_images_urls = []
+dj_hrefs = []
+
 dj_dicts = dict()
 dj_otherDicts = dict()
 
@@ -71,10 +67,24 @@ def read_sidebar_photos():
         dj_img_datas.append(io.BytesIO(urlopen(dj_image_url).read()))
     return dj_img_datas
 
+def set_hrefs():
+    htmls = []
+    for i, href in enumerate(dj_hrefs):
+        if href in '':
+            htmls.append(f'<img src="{dj_images_urls[i]}" alt="dj" width="{html_width}" style="border:solid 2px #FFFFFF">')
+        else:
+            htmls.append(f'<a href="{dj_hrefs[i]}" target="_blank"><img src="{dj_images_urls[i]}" alt="dj" width="{html_width}" style="border:solid 2px #FFFFFF"></a>')
+    return htmls
+
 dj_contents = dj_soup.select("div .prof dl")
 for i, element in enumerate(dj_contents):
     dj_ids.append(element.select('dt')[0].get('id'))
     dj_images_urls.append(element.select('dt')[0].select('img')[0]['src'])
+    dj_href = element.select('a')[0].get('href')
+    if '/programs/' in dj_href:
+        dj_hrefs.append(domain + dj_href)
+    else:
+        dj_hrefs.append('')
 
     el2 = dj_contents[i].get_text().split('\n')[1:-1]
     key = el2[0].split('：')[1]
@@ -130,6 +140,7 @@ for element in dj_contents:
     else:
         dj_skills.append(None)
 
+
 df = pd.DataFrame({
     'id': dj_ids,
     '名前Name': dj_names,
@@ -142,6 +153,7 @@ df = pd.DataFrame({
     '画像URL': dj_images_urls
 })
 df = df.style.set_properties(**{'text-align': 'left'})
+
 
 #================================================================
 #================================================================
@@ -175,6 +187,15 @@ df2 = df2.style.set_properties(**{'text-align': 'left'})
 ziplist = list(zip(program_images , program_sound_urls, program_summarys))
 add_listnew = dict(zip(program_titles, ziplist))
 
+st.title("RADIO365 DJ's Fan site")
+
+hedder_text = """
+こちらのサイトは Radio365 DJを応援するファンサイトです。
+画像下に表示されている再生ボタンで番組を聴くことができます。（初期音声にご注意）
+番組切り替えは左側「 Select program 」を利用してください。
+"""
+st.text(hedder_text)
+
 selector = st.sidebar.selectbox("Select program (1 - 100):",program_titles)
 
 #===== read sidebar image file =======
@@ -187,7 +208,13 @@ st.audio(sound_data, format='audio/aac')
 
 st.markdown(add_listnew[selector][2], unsafe_allow_html=True)
 
-# st.write('')
+html_width = 80
+htmls = set_hrefs()
+html_height = (int(len(htmls) / 8) + 1) * 70
+joinhtml = "".join(htmls)
+html = f"""{joinhtml}"""
+with st.beta_expander("DJ Photo (click image)",expanded=True):
+    componentsv1.html(html,height = html_height)
 
 if dj_img_datas == []:
     with st.beta_expander("DJ List",expanded=False):
