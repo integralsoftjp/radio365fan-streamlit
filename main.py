@@ -8,6 +8,7 @@ import streamlit as st
 import streamlit.components.v1 as componentsv1
 import feedparser
 import pandas as pd
+import numpy as np
 from urllib.request import urlopen
 from bs4 import BeautifulSoup
 
@@ -154,6 +155,7 @@ df = pd.DataFrame({
     '特技Skills': dj_skills,
     '画像URL': dj_images_urls
 })
+df.index = np.arange(1, len(df)+1)
 df = df.style.set_properties(**{'text-align': 'left'})
 
 
@@ -184,6 +186,7 @@ df2 = pd.DataFrame({
 '配信日Pubday': program_pubdates,
 '再生時間SoundTime': program_times
 })
+df2.index = np.arange(1, len(df2)+1)
 df2 = df2.style.set_properties(**{'text-align': 'left'})
 
 # program_djnames 追加
@@ -201,9 +204,9 @@ add_listnew = dict(zip(program_titles, ziplist))
 st.title("RADIO365 DJ's Fan site")
 
 hedder_text = """
-こちらのサイトは Radio365 DJを応援するファンサイトです。
-画像下に表示されている再生ボタンで番組を聴くことができます。（初期音声にご注意）
-番組切り替えは左側「 Select program 」を利用してください。
+Radio365 DJ ファンサイトです。
+再生ボタンで番組をお楽しみください。初期ボリュームにご注意ください。
+左上の「 Select program 」で番組(1～100迄)の切替ができます。（本家からデータを自動取得）
 """
 st.text(hedder_text)
 
@@ -222,6 +225,8 @@ st.audio(sound_data, format='audio/aac')
 
 st.markdown(add_listnew[selector][2], unsafe_allow_html=True)
 
+# DJ photo & profile
+
 html_width = 80
 htmls = set_hrefs()
 html_height = (int(len(htmls) / 8) + 1) * 70
@@ -230,16 +235,21 @@ html = f"""{joinhtml}"""
 with st.beta_expander("DJ Photo (please click to see profile)",expanded=True):
     componentsv1.html(html,height = html_height)
 
+# DJ List
 if dj_img_datas == []:
-    with st.beta_expander("DJ List",expanded=False):
+    with st.beta_expander("DJ List",expanded=True):
         st.dataframe(df)
 
+# Program List
 if dj_img_datas == []:
-    with st.beta_expander('Program List',expanded=False):
+    with st.beta_expander('Program List',expanded=True):
         st.dataframe(df2)
 
+st.sidebar.text('')
 
-st.sidebar.text("Dj's Photo:")
+# Sidebar DJ photo
+temp_text = str(len(dj_images_urls)) + " dj"
+st.sidebar.text(temp_text)
 
 if dj_img_datas == []:
     dj_img_datas = read_sidebar_photos()

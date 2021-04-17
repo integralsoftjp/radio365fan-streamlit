@@ -2,3 +2,4 @@ streamlit
 feedparser
 bs4
 pandas
+numpy
