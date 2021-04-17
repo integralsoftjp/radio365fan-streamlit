@@ -111,37 +111,37 @@ for element in dj_contents:
     if '担当番組' in contents:
         dj_haveprograms.append(contents['担当番組'])
     else:
-        dj_haveprograms.append(None)
+        dj_haveprograms.append('')
 
     # -- 誕生日
     if '誕生日' in contents:
         dj_births.append(contents['誕生日'])
     else:
-        dj_births.append(None)
+        dj_births.append('')
 
     # -- 血液型
     if '血液型' in contents:
         dj_bloods.append(contents['血液型'])
     else:
-        dj_bloods.append(None)
+        dj_bloods.append('')
 
     # -- 身長
     if '身長' in contents:
         dj_heights.append(contents['身長'])
     else:
-        dj_heights.append(None)
+        dj_heights.append('')
 
     # -- 趣味
     if '趣味' in contents:
         dj_hobbys.append(contents['趣味'])
     else:
-        dj_hobbys.append(None)
+        dj_hobbys.append('')
 
     # -- 特技
     if '特技' in contents:
         dj_skills.append(contents['特技'])
     else:
-        dj_skills.append(None)
+        dj_skills.append('')
 
 
 df = pd.DataFrame({
@@ -178,6 +178,13 @@ for cnt, entrie in enumerate(program_res.entries):
     program_djnames.append('　')
     program_times.append('　')
 
+# program_djnames 追加
+for i, dj_id in enumerate(program_ids):
+    if dj_id in dj_ids:
+        program_djnames[i] = dj_names[dj_ids.index(dj_id)]
+    else:
+        program_djnames[i] = ''
+        
 df2 = pd.DataFrame({
 'id': program_ids,
 'Program': program_titles,
@@ -188,15 +195,6 @@ df2 = pd.DataFrame({
 })
 df2.index = np.arange(1, len(df2)+1)
 df2 = df2.style.set_properties(**{'text-align': 'left'})
-
-# program_djnames 追加
-for i, dj_id in enumerate(program_ids):
-    if dj_id in dj_ids:
-        program_djnames[i] = dj_names[dj_ids.index(dj_id)]
-    else:
-        program_djnames[i] = ''
-
-
 
 ziplist = list(zip(program_images , program_sound_urls, program_summarys, program_subtitles, program_djnames))
 add_listnew = dict(zip(program_titles, ziplist))
