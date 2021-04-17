@@ -86,7 +86,6 @@ for i, element in enumerate(dj_contents):
     if '/programs/' in dj_href:
         dj_hrefs.append(domain + dj_href)
     else:
-        print(dj_href)
         dj_hrefs.append(dj_href)
 
     el2 = dj_contents[i].get_text().split('\n')[1:-1]
@@ -187,7 +186,16 @@ df2 = pd.DataFrame({
 })
 df2 = df2.style.set_properties(**{'text-align': 'left'})
 
-ziplist = list(zip(program_images , program_sound_urls, program_summarys))
+# program_djnames 追加
+for i, dj_id in enumerate(program_ids):
+    if dj_id in dj_ids:
+        program_djnames[i] = dj_names[dj_ids.index(dj_id)]
+    else:
+        program_djnames[i] = ''
+
+
+
+ziplist = list(zip(program_images , program_sound_urls, program_summarys, program_subtitles, program_djnames))
 add_listnew = dict(zip(program_titles, ziplist))
 
 st.title("RADIO365 DJ's Fan site")
@@ -200,6 +208,9 @@ hedder_text = """
 st.text(hedder_text)
 
 selector = st.sidebar.selectbox("Select program (1 - 100):",program_titles)
+
+markdown_str = "#### " + '<font color="Gray">' + add_listnew[selector][3] + '</font>'
+st.markdown(markdown_str, unsafe_allow_html=True)
 
 #===== read sidebar image file =======
 img_data = read_image()
@@ -216,7 +227,7 @@ htmls = set_hrefs()
 html_height = (int(len(htmls) / 8) + 1) * 70
 joinhtml = "".join(htmls)
 html = f"""{joinhtml}"""
-with st.beta_expander("DJ Photo (click image)",expanded=True):
+with st.beta_expander("DJ Photo (please click to see profile)",expanded=True):
     componentsv1.html(html,height = html_height)
 
 if dj_img_datas == []:
