@@ -84,7 +84,8 @@ for i, element in enumerate(dj_contents):
     if '/programs/' in dj_href:
         dj_hrefs.append(domain + dj_href)
     else:
-        dj_hrefs.append('')
+        print(dj_href)
+        dj_hrefs.append(dj_href)
 
     el2 = dj_contents[i].get_text().split('\n')[1:-1]
     key = el2[0].split('：')[1]
