@@ -11,6 +11,7 @@ import streamlit.components.v1 as componentsv1
 import feedparser
 import pandas as pd
 import numpy as np
+import dnspython
 from urllib.request import urlopen
 from bs4 import BeautifulSoup
 from pydub import AudioSegment
