@@ -11,10 +11,10 @@ import streamlit.components.v1 as componentsv1
 import feedparser
 import pandas as pd
 import numpy as np
-import pymongo
 from urllib.request import urlopen
 from bs4 import BeautifulSoup
 from pydub import AudioSegment
+from pymongo import MongoClient
 from pymongo.errors import DuplicateKeyError
 
 
@@ -65,7 +65,7 @@ CONN_URI = "mongodb+srv://mongouser:mongopasswd@mycluster0.p0yno.mongodb.net/myF
 def provide_db_connection(func):
     @wraps(func)
     def wrapper(*args, **kwargs):
-        conn = pymongo.MongoClient(CONN_URI)
+        conn = MongoClient(CONN_URI)
         result =  func(conn=conn, *args, **kwargs)
         conn.close()
         return result
