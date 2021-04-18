@@ -12,9 +12,9 @@ import feedparser
 import pandas as pd
 import numpy as np
 import ffmpeg
+import pydub
 from urllib.request import urlopen
 from bs4 import BeautifulSoup
-from pydub import AudioSegment
 from pymongo import MongoClient
 from pymongo.errors import DuplicateKeyError
 
@@ -83,7 +83,7 @@ def read_sound_data(program_sound_url:str) -> bytes:
     return sound_data
 
 def get_sound_time(sound_url:str, sound_data:bytes) -> str:
-    au_sound = AudioSegment.from_file(sound_data, sound_url[-3:])
+    au_sound = pydub.AudioSegment.from_file(sound_data, sound_url[-3:])
     au_time = au_sound.duration_seconds
     au_time_str = str(int(au_time / 60)) + ":" + str(int(au_time % 60))
     return au_time_str
