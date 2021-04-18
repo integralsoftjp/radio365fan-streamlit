@@ -3,3 +3,5 @@ feedparser
 bs4
 pandas
 numpy
+pymongo
+pydub
