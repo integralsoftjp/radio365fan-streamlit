@@ -57,7 +57,7 @@ program_summarys = []
 program_sound_urls = []
 
 dj_img_datas = []
-CONN_URI = "mongodb:localhost:27017"
+CONN_URI = "mongodb://localhost:27017"
 
 # @st.cache(hash_funcs={MongoClient: id})
 # def get_client():
