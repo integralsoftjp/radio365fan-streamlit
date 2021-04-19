@@ -56,9 +56,9 @@ program_summarys = []
 program_sound_urls = []
 
 dj_img_datas = []
-secret_user = st.secrets['db_user']
-secret_passwd = st.secrets['db_password']
-CONN_URI = "mongodb+srv://" + db_user + ":" + secret_passwd + "@mycluster0.p0yno.mongodb.net/myFirstDatabase?retryWrites=true&w=majority"
+secret_user = st.secrets['dbuser']
+secret_passwd = st.secrets['dbpassword']
+CONN_URI = "mongodb+srv://" + secret_user + ":" + secret_passwd + "@mycluster0.p0yno.mongodb.net/myFirstDatabase?retryWrites=true&w=majority"
 # CONN_URI = "mongodb://localhost:27017/"
 
 # @st.cache(hash_funcs={MongoClient: id})
