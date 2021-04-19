@@ -11,7 +11,6 @@ import streamlit.components.v1 as componentsv1
 import feedparser
 import pandas as pd
 import numpy as np
-import ffmpeg
 import pydub
 from urllib.request import urlopen
 from bs4 import BeautifulSoup
@@ -57,8 +56,8 @@ program_summarys = []
 program_sound_urls = []
 
 dj_img_datas = []
-CONN_URI = "mongodb+srv://mongouser:mongopasswd@mycluster0.p0yno.mongodb.net/myFirstDatabase?retryWrites=true&w=majority"
-# CONN_URI = "mongodb://localhost:27017/"
+# CONN_URI = "mongodb+srv://mongouser:mongopasswd@mycluster0.p0yno.mongodb.net/myFirstDatabase?retryWrites=true&w=majority"
+CONN_URI = "mongodb://localhost:27017/"
 
 # @st.cache(hash_funcs={MongoClient: id})
 # def get_client():
