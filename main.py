@@ -1,8 +1,3 @@
-<<<<<<< HEAD
-# --- master
-
-=======
->>>>>>> feature/soundmongo
 import datetime
 import io
 import pickle
