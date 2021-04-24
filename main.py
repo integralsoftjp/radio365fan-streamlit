@@ -1,8 +1,12 @@
+<<<<<<< HEAD
 # --- master
 
+=======
+>>>>>>> feature/soundmongo
 import datetime
 import io
 import pickle
+import base64
 from PIL import Image
 from functools import wraps
 
@@ -12,11 +16,11 @@ import feedparser
 import pandas as pd
 import numpy as np
 import pydub
+import xlsxwriter
 from urllib.request import urlopen
 from bs4 import BeautifulSoup
 from pymongo import MongoClient
 from pymongo.errors import DuplicateKeyError
-
 
 domain = "https://www.radio365.net"
 
@@ -89,6 +93,23 @@ def get_sound_time(sound_url:str, sound_data:bytes) -> str:
     au_time = au_sound.duration_seconds
     au_time_str = str(int(au_time / 60)) + ":" + str(int(au_time % 60))
     return au_time_str
+
+def to_excel(df):
+    output = io.BytesIO()
+    writer = pd.ExcelWriter(output, engine='xlsxwriter')
+    df.to_excel(writer, sheet_name='Sheet1')
+    writer.save()
+    processed_data = output.getvalue()
+    return processed_data
+
+def get_table_download_link(df):
+    """Generates a link allowing the data in a given panda dataframe to be downloaded
+    in:  dataframe
+    out: href string
+    """
+    val = to_excel(df)
+    b64 = base64.b64encode(val)  # val looks like b'...'
+    return f'<a href="data:application/octet-stream;base64,{b64.decode()}" download="extract.xlsx">Download csv file</a>' # decode b'abc' => abc
 
 @st.cache
 @provide_db_connection
@@ -240,6 +261,7 @@ df2 = pd.DataFrame({
 df2.index = np.arange(1, len(df2)+1)
 df2 = df2.style.set_properties(**{'text-align': 'left'})
 
+st.set_page_config(page_title="RADIO365 DJ's Fan",)
 st.title("RADIO365 DJ's Fan site")
 
 hedder_text = """
@@ -273,7 +295,7 @@ html_height = (int(len(htmls) / 8) + 1) * 70
 joinhtml = "".join(htmls)
 html = f"""{joinhtml}"""
 with st.beta_expander("DJ Photo (please click to see profile)",expanded=True):
-    componentsv1.html(html,height = html_height)
+    componentsv1.html(html,height = html_height, scrolling=True)
 
 st.sidebar.text('')
 
@@ -292,8 +314,9 @@ for i, dj_image_url in enumerate(dj_images_urls):
 # DJ List
 with st.beta_expander("DJ List",expanded=True):
     st.dataframe(df)
-
+    st.markdown(get_table_download_link(df), unsafe_allow_html=True)
 # Program List
 with st.beta_expander('Program List',expanded=True):
     st.dataframe(df2)
+    st.markdown(get_table_download_link(df2), unsafe_allow_html=True)
     
