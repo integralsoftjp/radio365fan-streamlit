@@ -118,7 +118,7 @@ def read_sidebar_photos(conn) -> bytes:
             cnt = db.image_df.count_documents({'name': mongo_key})
             if cnt > 0:
                 filter_one_imagedata = db.image_df.find({'name': mongo_key})
-                pickled = filter_one_imagedata[0].get('imagedata')
+                pickled = filter_one_imagedata[0]['imagedata']
                 image_data = pickle.loads(pickled)
                 dj_img_datas.append(image_data)
             else:
@@ -140,11 +140,11 @@ def set_hrefs(dj_hrefs:list) -> list:
             htmls.append(f'<a href="{dj_hrefs[i]}" target="_blank"><img src="{dj_images_urls[i]}" alt="dj" width="{html_width}" style="border:solid 1px #FFFFFF"></a>')
     return htmls
 
-dj_contents = dj_soup.select("div .prof dl")
+dj_contents = dj_soup.select(".prof dl")
 for i, element in enumerate(dj_contents):
-    dj_ids.append(element.select('dt')[0].get('id'))
+    dj_ids.append(element.select('dt')[0]['id'])
     dj_images_urls.append(element.select('dt')[0].select('img')[0]['src'])
-    dj_href = element.select('a')[0].get('href')
+    dj_href = element.select('a')[0]['href']
     if '/programs/' in dj_href:
         dj_hrefs.append(domain + dj_href)
     else:
@@ -286,7 +286,7 @@ st.markdown(program_summarys[select_indexNumber], unsafe_allow_html=True)
 
 html_width = 80
 htmls = set_hrefs(dj_hrefs)
-html_height = (int(len(htmls) / 8) + 1) * 70
+html_height = (int(len(htmls) / 8) + 1) * 80
 joinhtml = "".join(htmls)
 html = f"""{joinhtml}"""
 with st.beta_expander("DJ Photo (please click to see profile)",expanded=True):
@@ -314,4 +314,3 @@ with st.beta_expander("DJ List",expanded=True):
 with st.beta_expander('Program List',expanded=True):
     st.dataframe(df2)
     st.markdown(get_table_download_link(df2), unsafe_allow_html=True)
-    
