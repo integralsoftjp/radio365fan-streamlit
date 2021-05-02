@@ -273,12 +273,19 @@ def main():
 
     st.title("RADIO365 DJ's Fan site")
 
-    hedder_text = """
-    Radio365 DJ ファンサイトです。
-    再生ボタンで番組をお楽しみください。初期ボリューム音声にご注意ください。
-    左上の「 Select program 」で番組(1～100迄)の切替ができます。（本家からデータを自動取得）
+    hedder_text = f"""This is a fan site to support Radio365 DJs.<br>
+Radio365 recruits amateur DJs and broadcasts their programs exclusively on the Internet.<br>
+The data is automatically acquired from the original [RADIO365](https://www.radio365.net/), so it is updated periodically.<br>
+Please click the play button below the image to enjoy the program. (Please pay attention to the sound when playing)<br>
+You can also switch between programs (from 1 to 100) by clicking "Select program" in the upper left corner.<br>
+
+Radio365 DJ を応援するファンサイトです。<br>
+Radio365はアマチュアDJを募集してインターネット専用に番組を放送しています。<br>
+本家[RADIO365](https://www.radio365.net/)から番組データを自動取得していますので定期的に更新されます。<br>
+画像の下にある再生ボタンで番組をお楽しみください。（再生時の音声にご注意ください）<br>
+また左上の「 Select program 」で番組(1～100迄)の切替ができます。
     """
-    st.text(hedder_text)
+    st.markdown(hedder_text,unsafe_allow_html=True)
 
     selector = st.sidebar.selectbox("Select program (1 - 100):",program_titles)
     select_indexNumber = int(selector.split(':')[0])-1
