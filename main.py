@@ -17,6 +17,10 @@ from bs4 import BeautifulSoup
 from pymongo import MongoClient
 from pymongo.errors import DuplicateKeyError
 
+st.set_page_config(page_title="RADIO365 DJ's Fan",)
+
+html_width = 80
+
 domain = "https://www.radio365.net"
 
 dj_base = 'https://www.radio365.net/navigator/'
@@ -55,11 +59,11 @@ program_summarys = []
 program_sound_urls = []
 
 dj_img_datas = []
+
 secret_user = st.secrets['dbuser']
 secret_passwd = st.secrets['dbpassword']
 CONN_URI = "mongodb+srv://" + secret_user + ":" + secret_passwd + "@mycluster0.p0yno.mongodb.net/myFirstDatabase?retryWrites=true&w=majority"
 
-html_width = 80
 # CONN_URI = "mongodb://localhost:27017/"
 
 # @st.cache(hash_funcs={MongoClient: id})
@@ -143,7 +147,14 @@ def set_hrefs(dj_hrefs:list) -> list:
     return htmls
 
 def main():
-
+    COLOR = "black"
+    BACKGROUND_COLOR = "#fff"
+    max_width = 1000
+    padding_top = 5
+    padding_right = 1
+    padding_left = 1
+    padding_bottom = 10
+    
     dj_contents = dj_soup.select(".prof dl")
     for i, element in enumerate(dj_contents):
         dj_ids.append(element.select('dt')[0]['id'])
@@ -260,7 +271,6 @@ def main():
     df2.index = np.arange(1, len(df2)+1)
     df2 = df2.style.set_properties(**{'text-align': 'left'})
 
-    st.set_page_config(page_title="RADIO365 DJ's Fan",)
     st.title("RADIO365 DJ's Fan site")
 
     hedder_text = """
@@ -272,6 +282,33 @@ def main():
 
     selector = st.sidebar.selectbox("Select program (1 - 100):",program_titles)
     select_indexNumber = int(selector.split(':')[0])-1
+
+    dark_theme = st.sidebar.checkbox("Dark Theme", False)
+    if dark_theme:
+        # global COLOR
+        # global BACKGROUND_COLOR
+        print('a')
+        BACKGROUND_COLOR = "rgb(17,17,17)"
+        COLOR = "#fff"
+
+    st.markdown(
+    f"""
+    <style>
+        .reportview-container .main .block-container{{
+            max-width: {max_width}px;
+            padding-top: {padding_top}rem;
+            padding-right: {padding_right}rem;
+            padding-left: {padding_left}rem;
+            padding-bottom: {padding_bottom}rem;
+        }}
+        .reportview-container .main {{
+            color: {COLOR};
+            background-color: {BACKGROUND_COLOR};
+        }}
+    </style>
+    """,
+            unsafe_allow_html=True,
+        )
 
     markdown_str = "#### " + '<font color="Gray">' + program_subtitles[select_indexNumber] + '</font>'
     st.markdown(markdown_str, unsafe_allow_html=True)
@@ -288,7 +325,7 @@ def main():
 
     # DJ photo & profile
     htmls = set_hrefs(dj_hrefs)
-    html_height = (int(len(htmls) / 8) + 1) * 80
+    html_height = (int(len(htmls) / 8) + 1) * 62
     joinhtml = "".join(htmls)
     html = f"""{joinhtml}"""
     with st.beta_expander("DJ Photo (please click to see profile)",expanded=True):
@@ -318,5 +355,4 @@ def main():
         st.markdown(get_table_download_link(df2), unsafe_allow_html=True)
 
 if __name__ == "__main__":
-    st.set_page_config(layout="wide")
     main()
