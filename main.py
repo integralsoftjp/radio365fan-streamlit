@@ -58,6 +58,8 @@ dj_img_datas = []
 secret_user = st.secrets['dbuser']
 secret_passwd = st.secrets['dbpassword']
 CONN_URI = "mongodb+srv://" + secret_user + ":" + secret_passwd + "@mycluster0.p0yno.mongodb.net/myFirstDatabase?retryWrites=true&w=majority"
+
+html_width = 80
 # CONN_URI = "mongodb://localhost:27017/"
 
 # @st.cache(hash_funcs={MongoClient: id})
@@ -140,177 +142,181 @@ def set_hrefs(dj_hrefs:list) -> list:
             htmls.append(f'<a href="{dj_hrefs[i]}" target="_blank"><img src="{dj_images_urls[i]}" alt="dj" width="{html_width}" style="border:solid 1px #FFFFFF"></a>')
     return htmls
 
-dj_contents = dj_soup.select(".prof dl")
-for i, element in enumerate(dj_contents):
-    dj_ids.append(element.select('dt')[0]['id'])
-    dj_images_urls.append(element.select('dt')[0].select('img')[0]['src'])
-    dj_href = element.select('a')[0]['href']
-    if '/programs/' in dj_href:
-        dj_hrefs.append(domain + dj_href)
-    else:
-        dj_hrefs.append(dj_href)
+def main():
 
-    el2 = dj_contents[i].get_text().split('\n')[1:-1]
-    key = el2[0].split('：')[1]
-    # --
-    dj_otherDicts = dict() #init
+    dj_contents = dj_soup.select(".prof dl")
+    for i, element in enumerate(dj_contents):
+        dj_ids.append(element.select('dt')[0]['id'])
+        dj_images_urls.append(element.select('dt')[0].select('img')[0]['src'])
+        dj_href = element.select('a')[0]['href']
+        if '/programs/' in dj_href:
+            dj_hrefs.append(domain + dj_href)
+        else:
+            dj_hrefs.append(dj_href)
 
-    for j in el2[1:]:
-        key2 = j.split('：')[0]
-        value = j.split('：')[1]
-        dj_otherDicts.update({key2:value})
+        el2 = dj_contents[i].get_text().split('\n')[1:-1]
+        key = el2[0].split('：')[1]
+        # --
+        dj_otherDicts = dict() #init
 
-    one_dict = {key:dj_otherDicts}
-    dj_dicts.update(one_dict)
+        for j in el2[1:]:
+            key2 = j.split('：')[0]
+            value = j.split('：')[1]
+            dj_otherDicts.update({key2:value})
 
-for element in dj_contents:
-    el1 = element.get_text().split('\n')[1:-1]
-    name = el1[0].split('：')[1]
-    dj_names.append(name)
-    # -- 担当番組Program
-    contents = dj_dicts[name]
-    if '担当番組' in contents:
-        dj_haveprograms.append(contents['担当番組'])
-    else:
-        dj_haveprograms.append('')
+        one_dict = {key:dj_otherDicts}
+        dj_dicts.update(one_dict)
 
-    # -- 誕生日Birth
-    if '誕生日' in contents:
-        dj_births.append(contents['誕生日'])
-    else:
-        dj_births.append('')
+    for element in dj_contents:
+        el1 = element.get_text().split('\n')[1:-1]
+        name = el1[0].split('：')[1]
+        dj_names.append(name)
+        # -- 担当番組Program
+        contents = dj_dicts[name]
+        if '担当番組' in contents:
+            dj_haveprograms.append(contents['担当番組'])
+        else:
+            dj_haveprograms.append('')
 
-    # -- 血液型Blood
-    if '血液型' in contents:
-        dj_bloods.append(contents['血液型'])
-    else:
-        dj_bloods.append('')
+        # -- 誕生日Birth
+        if '誕生日' in contents:
+            dj_births.append(contents['誕生日'])
+        else:
+            dj_births.append('')
 
-    # -- 身長Hight
-    if '身長' in contents:
-        dj_heights.append(contents['身長'])
-    else:
-        dj_heights.append('')
+        # -- 血液型Blood
+        if '血液型' in contents:
+            dj_bloods.append(contents['血液型'])
+        else:
+            dj_bloods.append('')
 
-    # -- 趣味Hobbys
-    if '趣味' in contents:
-        dj_hobbys.append(contents['趣味'])
-    else:
-        dj_hobbys.append('')
+        # -- 身長Hight
+        if '身長' in contents:
+            dj_heights.append(contents['身長'])
+        else:
+            dj_heights.append('')
 
-    # -- 特技Skills
-    if '特技' in contents:
-        dj_skills.append(contents['特技'])
-    else:
-        dj_skills.append('')
+        # -- 趣味Hobbys
+        if '趣味' in contents:
+            dj_hobbys.append(contents['趣味'])
+        else:
+            dj_hobbys.append('')
+
+        # -- 特技Skills
+        if '特技' in contents:
+            dj_skills.append(contents['特技'])
+        else:
+            dj_skills.append('')
 
 
-df = pd.DataFrame({
-    'id': dj_ids,
-    '名前Name': dj_names,
-    '担当番組Program': dj_haveprograms,
-    '誕生日Birth': dj_births,
-    '血液型Blood': dj_bloods,
-    '身長Hight': dj_heights,
-    '趣味Hobbys': dj_hobbys,
-    '特技Skills': dj_skills,
-    '画像URL': dj_images_urls
-})
-df.index = np.arange(1, len(df)+1)
-df = df.style.set_properties(**{'text-align': 'left'})
+    df = pd.DataFrame({
+        'id': dj_ids,
+        '名前Name': dj_names,
+        '担当番組Program': dj_haveprograms,
+        '誕生日Birth': dj_births,
+        '血液型Blood': dj_bloods,
+        '身長Hight': dj_heights,
+        '趣味Hobbys': dj_hobbys,
+        '特技Skills': dj_skills,
+        '画像URL': dj_images_urls
+    })
+    df.index = np.arange(1, len(df)+1)
+    df = df.style.set_properties(**{'text-align': 'left'})
 
-#================================================================
-#================================================================
-#================================================================
+    #================================================================
+    #================================================================
+    #================================================================
 
-for cnt, entrie in enumerate(program_res.entries):
-    program_id = entrie['mobileimg']['src'].split('/')[5]
-    mark = "/" + program_id + "/"
-    href = entrie['links'][1]['href']
-    program_ids.append(program_id)
-    program_titles.append(str(cnt+1) + ": " + entrie['title'])
-    program_subtitles.append(entrie['mobilesubtitle'])
-    program_image_urls.append(entrie['mobileimg']['src'])
-    program_summarys.append(entrie['summary'])
-    program_sound_urls.append(program_base + mark + href)
-    datestr = entrie['published']
-    program_pubdates.append(datetime.datetime.strptime(datestr, '%a, %d %b %Y %H:%M:%S %z').strftime('%Y/%m/%d'))
-    program_djnames.append('　')
-    program_sound_times.append('　')
+    for cnt, entrie in enumerate(program_res.entries):
+        program_id = entrie['mobileimg']['src'].split('/')[5]
+        mark = "/" + program_id + "/"
+        href = entrie['links'][1]['href']
+        program_ids.append(program_id)
+        program_titles.append(str(cnt+1) + ": " + entrie['title'])
+        program_subtitles.append(entrie['mobilesubtitle'])
+        program_image_urls.append(entrie['mobileimg']['src'])
+        program_summarys.append(entrie['summary'])
+        program_sound_urls.append(program_base + mark + href)
+        datestr = entrie['published']
+        program_pubdates.append(datetime.datetime.strptime(datestr, '%a, %d %b %Y %H:%M:%S %z').strftime('%Y/%m/%d'))
+        program_djnames.append('　')
+        program_sound_times.append('　')
 
-# program_djnames 追加
-for i, dj_id in enumerate(program_ids):
-    if dj_id in dj_ids:
-        program_djnames[i] = dj_names[dj_ids.index(dj_id)]
-    else:
-        program_djnames[i] = ''
+    # program_djnames 追加
+    for i, dj_id in enumerate(program_ids):
+        if dj_id in dj_ids:
+            program_djnames[i] = dj_names[dj_ids.index(dj_id)]
+        else:
+            program_djnames[i] = ''
 
-df2 = pd.DataFrame({
-'id': program_ids,
-'Program': program_titles,
-'番組名': program_subtitles,
-'DJName': program_djnames,
-'配信日Pubday': program_pubdates,
-'再生時間SoundTime': program_sound_times
-})
-df2.index = np.arange(1, len(df2)+1)
-df2 = df2.style.set_properties(**{'text-align': 'left'})
+    df2 = pd.DataFrame({
+    'id': program_ids,
+    'Program': program_titles,
+    '番組名': program_subtitles,
+    'DJName': program_djnames,
+    '配信日Pubday': program_pubdates,
+    '再生時間SoundTime': program_sound_times
+    })
+    df2.index = np.arange(1, len(df2)+1)
+    df2 = df2.style.set_properties(**{'text-align': 'left'})
 
-st.set_page_config(page_title="RADIO365 DJ's Fan",)
-st.title("RADIO365 DJ's Fan site")
+    st.set_page_config(page_title="RADIO365 DJ's Fan",)
+    st.title("RADIO365 DJ's Fan site")
 
-hedder_text = """
-Radio365 DJ ファンサイトです。
-再生ボタンで番組をお楽しみください。初期ボリューム音声にご注意ください。
-左上の「 Select program 」で番組(1～100迄)の切替ができます。（本家からデータを自動取得）
-"""
-st.text(hedder_text)
+    hedder_text = """
+    Radio365 DJ ファンサイトです。
+    再生ボタンで番組をお楽しみください。初期ボリューム音声にご注意ください。
+    左上の「 Select program 」で番組(1～100迄)の切替ができます。（本家からデータを自動取得）
+    """
+    st.text(hedder_text)
 
-selector = st.sidebar.selectbox("Select program (1 - 100):",program_titles)
-select_indexNumber = int(selector.split(':')[0])-1
+    selector = st.sidebar.selectbox("Select program (1 - 100):",program_titles)
+    select_indexNumber = int(selector.split(':')[0])-1
 
-markdown_str = "#### " + '<font color="Gray">' + program_subtitles[select_indexNumber] + '</font>'
-st.markdown(markdown_str, unsafe_allow_html=True)
+    markdown_str = "#### " + '<font color="Gray">' + program_subtitles[select_indexNumber] + '</font>'
+    st.markdown(markdown_str, unsafe_allow_html=True)
 
-#===== read sidebar image file =======
-img_data = read_image(program_image_urls[select_indexNumber])
-st.image(img_data, caption=selector, use_column_width=True)
+    #===== read sidebar image file =======
+    img_data = read_image(program_image_urls[select_indexNumber])
+    st.image(img_data, caption=selector, use_column_width=True)
 
-# sound update
-sound_data = read_sound_data(program_sound_urls[select_indexNumber])
-st.audio(sound_data, format='audio/aac')
+    # sound update
+    sound_data = read_sound_data(program_sound_urls[select_indexNumber])
+    st.audio(sound_data, format='audio/aac')
 
-st.markdown(program_summarys[select_indexNumber], unsafe_allow_html=True)
+    st.markdown(program_summarys[select_indexNumber], unsafe_allow_html=True)
 
-# DJ photo & profile
+    # DJ photo & profile
+    htmls = set_hrefs(dj_hrefs)
+    html_height = (int(len(htmls) / 8) + 1) * 80
+    joinhtml = "".join(htmls)
+    html = f"""{joinhtml}"""
+    with st.beta_expander("DJ Photo (please click to see profile)",expanded=True):
+        componentsv1.html(html,height = html_height, scrolling=True)
 
-html_width = 80
-htmls = set_hrefs(dj_hrefs)
-html_height = (int(len(htmls) / 8) + 1) * 80
-joinhtml = "".join(htmls)
-html = f"""{joinhtml}"""
-with st.beta_expander("DJ Photo (please click to see profile)",expanded=True):
-    componentsv1.html(html,height = html_height, scrolling=True)
+    st.sidebar.text('')
 
-st.sidebar.text('')
+    # Sidebar DJ photo
+    temp_text = str(len(dj_images_urls)) + " DJ member:"
+    st.sidebar.text(temp_text)
 
-# Sidebar DJ photo
-temp_text = str(len(dj_images_urls)) + " DJ member:"
-st.sidebar.text(temp_text)
+    dj_img_datas = read_sidebar_photos()
+    for i, dj_image_url in enumerate(dj_images_urls):
+        st.sidebar.image(dj_img_datas[i], caption=dj_names[i], use_column_width='True')
 
-dj_img_datas = read_sidebar_photos()
-for i, dj_image_url in enumerate(dj_images_urls):
-    st.sidebar.image(dj_img_datas[i], caption=dj_names[i], use_column_width='True')
+    # for i, program_sound_url in enumerate(program_sound_urls):
+    #     sound_data = read_sound_data(program_sound_urls[i])
+    #     program_sound_times[i] = get_sound_time(program_sound_urls[i], sound_data)
 
-# for i, program_sound_url in enumerate(program_sound_urls):
-#     sound_data = read_sound_data(program_sound_urls[i])
-#     program_sound_times[i] = get_sound_time(program_sound_urls[i], sound_data)
+    # DJ List
+    with st.beta_expander("DJ List",expanded=True):
+        st.dataframe(df)
+        st.markdown(get_table_download_link(df), unsafe_allow_html=True)
+    # Program List
+    with st.beta_expander('Program List',expanded=True):
+        st.dataframe(df2)
+        st.markdown(get_table_download_link(df2), unsafe_allow_html=True)
 
-# DJ List
-with st.beta_expander("DJ List",expanded=True):
-    st.dataframe(df)
-    st.markdown(get_table_download_link(df), unsafe_allow_html=True)
-# Program List
-with st.beta_expander('Program List',expanded=True):
-    st.dataframe(df2)
-    st.markdown(get_table_download_link(df2), unsafe_allow_html=True)
+if __name__ == "__main__":
+    st.set_page_config(layout="wide")
+    main()
