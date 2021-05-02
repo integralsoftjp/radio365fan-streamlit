@@ -305,6 +305,30 @@ def main():
             color: {COLOR};
             background-color: {BACKGROUND_COLOR};
         }}
+        h1 {{
+            color: {COLOR};
+            background-color: {BACKGROUND_COLOR};
+        }}
+        h5 {{
+            color: {COLOR};
+            background-color: {BACKGROUND_COLOR};
+        }}
+        .css-145kmo2 {{
+            color: {COLOR};
+            background-color: {BACKGROUND_COLOR};
+        }}
+        .css-qbe2hs {{
+            color: {COLOR};
+            background-color: {BACKGROUND_COLOR};
+        }}
+        .st-ck {{
+            color: {COLOR};
+            background-color: {BACKGROUND_COLOR};
+        }}
+        .css-xq1lnh-EmotionIconBase {{
+            color: {COLOR};
+            background-color: {BACKGROUND_COLOR};
+        }}
     </style>
     """,
             unsafe_allow_html=True,
