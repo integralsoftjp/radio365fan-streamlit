@@ -12,6 +12,7 @@ import pandas as pd
 import numpy as np
 import pydub
 import xlsxwriter
+import ffmpeg
 from urllib.request import urlopen
 from bs4 import BeautifulSoup
 from pymongo import MongoClient
@@ -146,6 +147,10 @@ def set_hrefs(dj_hrefs:list) -> list:
             htmls.append(f'<a href="{dj_hrefs[i]}" target="_blank"><img src="{dj_images_urls[i]}" alt="dj" width="{html_width}" style="border:solid 1px #FFFFFF"></a>')
     return htmls
 
+#================================================================
+#================================================================
+#================================================================
+
 def main():
     COLOR = "black"
     BACKGROUND_COLOR = "#fff"
@@ -154,7 +159,7 @@ def main():
     padding_right = 1
     padding_left = 1
     padding_bottom = 10
-    
+
     dj_contents = dj_soup.select(".prof dl")
     for i, element in enumerate(dj_contents):
         dj_ids.append(element.select('dt')[0]['id'])
@@ -234,10 +239,6 @@ def main():
     df.index = np.arange(1, len(df)+1)
     df = df.style.set_properties(**{'text-align': 'left'})
 
-    #================================================================
-    #================================================================
-    #================================================================
-
     for cnt, entrie in enumerate(program_res.entries):
         program_id = entrie['mobileimg']['src'].split('/')[5]
         mark = "/" + program_id + "/"
@@ -290,13 +291,10 @@ Radio365はアマチュアDJを募集してインターネット専用に番組�
     selector = st.sidebar.selectbox("Select program (1 - 100):",program_titles)
     select_indexNumber = int(selector.split(':')[0])-1
 
-    dark_theme = st.sidebar.checkbox("Dark Theme", False)
-    if dark_theme:
-        # global COLOR
-        # global BACKGROUND_COLOR
-        print('a')
-        BACKGROUND_COLOR = "rgb(17,17,17)"
-        COLOR = "#fff"
+    # dark_theme = st.sidebar.checkbox("Dark Theme", False)
+    # if dark_theme:
+    #     BACKGROUND_COLOR = "rgb(17,17,17)"
+    #     COLOR = "#fff"
 
     st.markdown(
     f"""
@@ -308,34 +306,34 @@ Radio365はアマチュアDJを募集してインターネット専用に番組�
             padding-left: {padding_left}rem;
             padding-bottom: {padding_bottom}rem;
         }}
-        .reportview-container .main {{
-            color: {COLOR};
-            background-color: {BACKGROUND_COLOR};
-        }}
-        h1 {{
-            color: {COLOR};
-            background-color: {BACKGROUND_COLOR};
-        }}
-        h5 {{
-            color: {COLOR};
-            background-color: {BACKGROUND_COLOR};
-        }}
-        .css-145kmo2 {{
-            color: {COLOR};
-            background-color: {BACKGROUND_COLOR};
-        }}
-        .css-qbe2hs {{
-            color: {COLOR};
-            background-color: {BACKGROUND_COLOR};
-        }}
-        .st-ck {{
-            color: {COLOR};
-            background-color: {BACKGROUND_COLOR};
-        }}
-        .css-xq1lnh-EmotionIconBase {{
-            color: {COLOR};
-            background-color: {BACKGROUND_COLOR};
-        }}
+        # .reportview-container .main {{
+        #     color: {COLOR};
+        #     background-color: {BACKGROUND_COLOR};
+        # }}
+        # h1 {{
+        #     color: {COLOR};
+        #     background-color: {BACKGROUND_COLOR};
+        # }}
+        # h5 {{
+        #     color: {COLOR};
+        #     background-color: {BACKGROUND_COLOR};
+        # }}
+        # .css-145kmo2 {{
+        #     color: {COLOR};
+        #     background-color: {BACKGROUND_COLOR};
+        # }}
+        # .css-qbe2hs {{
+        #     color: {COLOR};
+        #     background-color: {BACKGROUND_COLOR};
+        # }}
+        # .st-ck {{
+        #     color: {COLOR};
+        #     background-color: {BACKGROUND_COLOR};
+        # }}
+        # .css-xq1lnh-EmotionIconBase {{
+        #     color: {COLOR};
+        #     background-color: {BACKGROUND_COLOR};
+        # }}
     </style>
     """,
             unsafe_allow_html=True,
