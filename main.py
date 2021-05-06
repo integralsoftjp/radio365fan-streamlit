@@ -156,7 +156,7 @@ def main():
     #MainMenu {visibility: hidden;}
     footer {visibility: hidden;}
     </style> """, unsafe_allow_html=True)
-
+    
     padding = 0
     st.markdown(f""" <style>
         .reportview-container .main .block-container{{
@@ -168,11 +168,11 @@ def main():
 
     COLOR = "black"
     BACKGROUND_COLOR = "#fff"
-    max_width = 1000
-    padding_top = 5
-    padding_right = 1
-    padding_left = 1
-    padding_bottom = 10
+    max_width = 860
+    padding_top = 0
+    padding_right = 0
+    padding_left = 0
+    padding_bottom = 0
 
     dj_contents = dj_soup.select(".prof dl")
     for i, element in enumerate(dj_contents):
@@ -315,10 +315,10 @@ Radio365はアマチュアDJを募集してインターネット専用に番組�
     <style>
         .reportview-container .main .block-container{{
             max-width: {max_width}px;
-            padding-top: {padding_top}rem;
-            padding-right: {padding_right}rem;
-            padding-left: {padding_left}rem;
-            padding-bottom: {padding_bottom}rem;
+            # padding-top: {padding_top}rem;
+            # padding-right: {padding_right}rem;
+            # padding-left: {padding_left}rem;
+            # padding-bottom: {padding_bottom}rem;
         }}
         # .reportview-container .main {{
         #     color: {COLOR};
