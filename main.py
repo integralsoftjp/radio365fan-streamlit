@@ -18,7 +18,7 @@ from bs4 import BeautifulSoup
 from pymongo import MongoClient
 from pymongo.errors import DuplicateKeyError
 
-st.set_page_config(page_title="RADIO365 DJ's Fan",)
+st.set_page_config(page_title="RADIO365 DJ's Fan", page_icon="📻")
 
 html_width = 80
 
@@ -152,6 +152,20 @@ def set_hrefs(dj_hrefs:list) -> list:
 #================================================================
 
 def main():
+    st.markdown(""" <style>
+    #MainMenu {visibility: hidden;}
+    footer {visibility: hidden;}
+    </style> """, unsafe_allow_html=True)
+
+    padding = 0
+    st.markdown(f""" <style>
+        .reportview-container .main .block-container{{
+            padding-top: {padding}rem;
+            padding-right: {padding}rem;
+            padding-left: {padding}rem;
+            padding-bottom: {padding}rem;
+        }} </style> """, unsafe_allow_html=True)
+
     COLOR = "black"
     BACKGROUND_COLOR = "#fff"
     max_width = 1000
