@@ -12,11 +12,11 @@ import pandas as pd
 import numpy as np
 import pydub
 import xlsxwriter
-import ffmpeg
 from urllib.request import urlopen
 from bs4 import BeautifulSoup
 from pymongo import MongoClient
 from pymongo.errors import DuplicateKeyError
+from st_aggrid import AgGrid
 
 st.set_page_config(page_title="RADIO365 DJ's Fan", page_icon="📻")
 
@@ -250,8 +250,7 @@ def main():
         '特技Skills': dj_skills,
         '画像URL': dj_images_urls
     })
-    df.index = np.arange(1, len(df)+1)
-    df = df.style.set_properties(**{'text-align': 'left'})
+    # df.index = np.arange(1, len(df)+1)
 
     for cnt, entrie in enumerate(program_res.entries):
         program_id = entrie['mobileimg']['src'].split('/')[5]
@@ -283,8 +282,7 @@ def main():
     '配信日Pubday': program_pubdates,
     '再生時間SoundTime': program_sound_times
     })
-    df2.index = np.arange(1, len(df2)+1)
-    df2 = df2.style.set_properties(**{'text-align': 'left'})
+    # df.index = np.arange(1, len(df)+1)
 
     st.title("RADIO365 DJ's Fan site")
 
@@ -390,11 +388,11 @@ Radio365はアマチュアDJを募集してインターネット専用に番組�
 
     # DJ List
     with st.beta_expander("DJ List",expanded=True):
-        st.dataframe(df)
+        AgGrid(df,autosize=True, )
         st.markdown(get_table_download_link(df), unsafe_allow_html=True)
     # Program List
     with st.beta_expander('Program List',expanded=True):
-        st.dataframe(df2)
+        AgGrid(df2,autosize=True, )
         st.markdown(get_table_download_link(df2), unsafe_allow_html=True)
 
 if __name__ == "__main__":

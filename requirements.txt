@@ -9,3 +9,5 @@ pymongo
 dnspython
 xlsxwriter
 ffmpeg
+pyarrow
+streamlit-aggrid
