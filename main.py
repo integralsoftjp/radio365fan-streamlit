@@ -16,7 +16,7 @@ from urllib.request import urlopen
 from bs4 import BeautifulSoup
 from pymongo import MongoClient
 from pymongo.errors import DuplicateKeyError
-from st_aggrid import AgGrid
+from st_aggrid import AgGrid,GridOptionsBuilder
 
 st.set_page_config(page_title="RADIO365 DJ's Fan", page_icon="📻")
 
@@ -111,7 +111,7 @@ def get_table_download_link(df):
     """
     val = to_excel(df)
     b64 = base64.b64encode(val)  # val looks like b'...'
-    return f'<a href="data:application/octet-stream;base64,{b64.decode()}" download="extract.xlsx">Download csv file</a>' # decode b'abc' => abc
+    return f'<a href="data:application/octet-stream;base64,{b64.decode()}" download="extract.xlsx">Download Excel file</a>' # decode b'abc' => abc
 
 @st.cache
 @provide_db_connection
@@ -363,13 +363,14 @@ Radio365はアマチュアDJを募集してインターネット専用に番組�
     st.audio(sound_data, format='audio/aac')
 
     st.markdown(program_summarys[select_indexNumber], unsafe_allow_html=True)
+    st.write('')
 
-    # DJ photo & profile
+    # DJ photo & profile block
     htmls = set_hrefs(dj_hrefs)
     html_height = (int(len(htmls) / 8) + 1) * 62
     joinhtml = "".join(htmls)
     html = f"""{joinhtml}"""
-    with st.beta_expander("DJ Photo (please click to see profile)",expanded=True):
+    with st.beta_expander("DJ Photo (please click to see phot & profile)",expanded=True):
         componentsv1.html(html,height = html_height, scrolling=True)
 
     st.sidebar.text('')
@@ -387,12 +388,20 @@ Radio365はアマチュアDJを募集してインターネット専用に番組�
     #     program_sound_times[i] = get_sound_time(program_sound_urls[i], sound_data)
 
     # DJ List
-    with st.beta_expander("DJ List",expanded=True):
-        AgGrid(df,autosize=True, )
+    with st.beta_expander("DJ List (please click to see dj list)",expanded=True):
+        #customize gridOptions
+        gb = GridOptionsBuilder.from_dataframe(df)
+        gb.configure_grid_options(pagination=True, paginationAutoPageSize=True,)
+        gridOptions = gb.build()
+
+        AgGrid(df, autosize=True, gridOptions=gridOptions)
         st.markdown(get_table_download_link(df), unsafe_allow_html=True)
     # Program List
-    with st.beta_expander('Program List',expanded=True):
-        AgGrid(df2,autosize=True, )
+    with st.beta_expander('Program List (please click to see program list)',expanded=True):
+        gb2 = GridOptionsBuilder.from_dataframe(df2)
+        gb2.configure_grid_options(pagination=True, paginationAutoPageSize=True,)
+        gridOptions2 = gb2.build()
+        AgGrid(df2, autosize=True, gridOptions=gridOptions2)
         st.markdown(get_table_download_link(df2), unsafe_allow_html=True)
 
 if __name__ == "__main__":
