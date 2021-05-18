@@ -85,7 +85,7 @@ def read_image(program_image_url:str) -> bytes:
     img_data = io.BytesIO(urlopen(program_image_url).read())
     return img_data
 
-# @st.cache(suppress_st_warning=True)
+@st.cache(suppress_st_warning=True)
 def read_sound_data(program_sound_url:str) -> bytes:
     sound_data = io.BytesIO(urlopen(program_sound_url).read())
     return sound_data
@@ -138,6 +138,7 @@ def read_sidebar_photos(conn) -> bytes:
             print('Name duplication error!')
     return dj_img_datas
 
+@st.cache(suppress_st_warning=True)
 def set_hrefs(dj_hrefs:list) -> list:
     htmls = []
     for i, href in enumerate(dj_hrefs):
