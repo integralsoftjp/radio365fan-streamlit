@@ -12,6 +12,7 @@ import pandas as pd
 import numpy as np
 import pydub
 import xlsxwriter
+import feedparser
 from urllib.request import urlopen
 from bs4 import BeautifulSoup
 from pymongo import MongoClient
@@ -256,7 +257,8 @@ def main():
     # df.index = np.arange(1, len(df)+1)
 
     for cnt, entrie in enumerate(program_res.entries):
-        program_id = entrie['mobileimg']['src'].split('/')[5]
+        #program_id = entrie['mobileimg']['src'].split('/')[5] #bad error 2021/11/05
+        program_id = entrie['link'].split('/')[5] #new 2021/11/05
         mark = "/" + program_id + "/"
         href = entrie['links'][1]['href']
         program_ids.append(program_id)
@@ -289,17 +291,13 @@ def main():
 
     st.title("RADIO365 DJ's Fan site")
 
-    hedder_text = f"""This is a fan site to support Radio365 DJs.<br>
-Radio365 recruits amateur DJs and broadcasts their programs exclusively on the Internet.<br>
-The data is automatically acquired from the original [RADIO365](https://www.radio365.net/), so it is updated periodically.<br>
-Please click the play button below the image to enjoy the program. (Please pay attention to the sound when playing)<br>
-You can also switch between programs (from 1 to 100) by clicking "Select program" in the upper left corner.<br>
+    hedder_text = f"""Obtained automatically from [RADIO365](https://www.radio365.net/).<br>
+Click the Play button below the image to play the program. (Please pay attention to the audio)<br>
+You can also use the upper left select box to switch programs (from 1 to 100).<br>
 
-Radio365 DJ を応援するファンサイトです。<br>
-Radio365はアマチュアDJを募集してインターネット専用に番組を放送しています。<br>
-本家[RADIO365](https://www.radio365.net/)から番組データを自動取得していますので定期的に更新されます。<br>
-画像の下にある再生ボタンで番組をお楽しみください。（再生時の音声にご注意ください）<br>
-また左上の「 Select program 」で番組(1～100迄)の切替ができます。
+[RADIO365](https://www.radio365.net/)から自動取得しています。<br>
+画像の下にある再生ボタンで番組が再生されます。（音声にご注意ください）<br>
+左上セレクトボックスでも番組(1～100迄)切替ができます。
     """
     st.markdown(hedder_text,unsafe_allow_html=True)
 
@@ -373,7 +371,7 @@ Radio365はアマチュアDJを募集してインターネット専用に番組�
     html_height = (int(len(htmls) / 8) + 1) * 62
     joinhtml = "".join(htmls)
     html = f"""{joinhtml}"""
-    with st.beta_expander("DJ Photo (please click to see phot & profile)",expanded=True):
+    with st.expander("DJ Photo (please click to see phot & profile)",expanded=True):
         componentsv1.html(html,height = html_height, scrolling=True)
 
     st.sidebar.text('')
@@ -391,7 +389,7 @@ Radio365はアマチュアDJを募集してインターネット専用に番組�
     #     program_sound_times[i] = get_sound_time(program_sound_urls[i], sound_data)
 
     # DJ List
-    with st.beta_expander("DJ List (please click to see dj list)",expanded=True):
+    with st.expander("DJ List (please click to see dj list)",expanded=True):
         #customize gridOptions
         gb = GridOptionsBuilder.from_dataframe(df)
         gb.configure_grid_options(pagination=True, paginationAutoPageSize=True,)
@@ -400,7 +398,7 @@ Radio365はアマチュアDJを募集してインターネット専用に番組�
         AgGrid(df, autosize=True, gridOptions=gridOptions)
         st.markdown(get_table_download_link(df), unsafe_allow_html=True)
     # Program List
-    with st.beta_expander('Program List (please click to see program list)',expanded=True):
+    with st.expander('Program List (please click to see program list)',expanded=True):
         gb2 = GridOptionsBuilder.from_dataframe(df2)
         gb2.configure_grid_options(pagination=True, paginationAutoPageSize=True,)
         gridOptions2 = gb2.build()
