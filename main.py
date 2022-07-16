@@ -12,7 +12,6 @@ import pandas as pd
 import numpy as np
 import pydub
 import xlsxwriter
-import feedparser
 from urllib.request import urlopen
 from bs4 import BeautifulSoup
 from pymongo import MongoClient
@@ -136,7 +135,7 @@ def read_sidebar_photos(conn) -> bytes:
                 dj_img_datas.append(image_data)
                 # pickle
                 pickled = pickle.dumps(image_data)
-                db.image_df.insert( { 'name':mongo_key, 'imagedata': pickled } )
+                db.image_df.insert_one( { 'name':mongo_key, 'imagedata': pickled } )
         except DuplicateKeyError:
             print('Name duplication error!')
     return dj_img_datas
