@@ -290,7 +290,7 @@ def main():
 
     st.title("RADIO365 DJ's Fan site")
 
-    hedder_text = f"""Obtained automatically from [RADIO365](https://www.radio365.net/). [update:2021/11/06]<br>
+    hedder_text = f"""Obtained automatically from [RADIO365](https://www.radio365.net/). [update:2022/07/16]<br>
 Click the Play button below the image to play the program. (Please pay attention to the audio)<br>
 You can also use the upper left select box to switch programs (from 1 to 100).<br>
 
