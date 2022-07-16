@@ -1,5 +1,6 @@
 /.streamlit
 /.vscode
 /.ipynb_checkpoints
+/.idea
 nohup.out
 *.ipynb
